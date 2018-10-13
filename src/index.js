@@ -1,15 +1,32 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import YTSearch from 'youtube-api-search';
+import SearchBar from './components/search_bar.js';
+import VideoList from './components/video_list.js';
+const API_KEY = 'AIzaSyDBM39aVfUOMJnytt3djfPezHANHxKYOx8';
 
-import App from './components/app';
-import reducers from './reducers';
+// Create a new component. This component
+// produce some HTML
+class App extends Component {        //const vs. var   const = constantly // () =>  == function () 
+    constructor(props) {
+        super(props);
+    
+        this.state = { videos: [] };
 
-const createStoreWithMiddleware = applyMiddleware()(createStore);
+        YTSearch({key: API_KEY, term: 'surfboards'}, (videos) => {
+            this.setState({videos});  //this.setState({videos: videos}) ES6 Syntax
+        });
+    }
 
-ReactDOM.render(
-  <Provider store={createStoreWithMiddleware(reducers)}>
-    <App />
-  </Provider>
-  , document.querySelector('.container'));
+    render () {   
+    return (
+    <div>
+        <SearchBar />
+        <VideoList videos={this.state.videos} />
+    </div>      //JSX can not be interpreted by the browser -> JSX is turned into HTML babeljs.io
+    );
+    }
+}
+
+//Take this components generated HTML and put it on the page (in the DOM)
+ReactDOM.render(<App />, document.querySelector('.container'));
